@@ -2,6 +2,7 @@ package ch.zhaw.rpa.arztpraxisuwebhookhandler.controller;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.security.GeneralSecurityException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,7 @@ public class DialogFlowWebhookController {
     }
 
 @PostMapping(value = "/dialogflow-main-handler", produces = { MediaType.APPLICATION_JSON_VALUE })
-public String webhook(@RequestBody String rawData) throws IOException {
+public String webhook(@RequestBody String rawData) throws IOException, GeneralSecurityException {
     GoogleCloudDialogflowV2WebhookResponse response = new GoogleCloudDialogflowV2WebhookResponse();
     GoogleCloudDialogflowV2IntentMessage msg = new GoogleCloudDialogflowV2IntentMessage();
     GoogleCloudDialogflowV2WebhookRequest request = gsonFactory
@@ -80,18 +81,15 @@ public String webhook(@RequestBody String rawData) throws IOException {
         
         msg = uiPathHandler.handlePatientRegistration(request, vorname, nachname, ahvNumber, email, handynummer, msg);
     } else if ("TerminVereinbaren".equals(intent)) {
-        String ahvNumber = getParameterString(parameters, "ahvNumber");
-        msg = uiPathHandler.handleAppointmentRequest(request, ahvNumber, msg);
-    
-    } else if ("FindFreeTimeSlots".equals(intent)) {
         String calendarId = "rpaarztpraxis@gmail.com"; // Use your calendar ID
         Date date = new Date();
         int d = 7;
+
         List<String> freeSlots = googleCalendarService.findFreeTimeSlots(calendarId, date, d);
         System.out.println("Free slots: " + freeSlots); // Print to console
-        msg.setText(new GoogleCloudDialogflowV2IntentMessageText().setText(List.of("Free slots: " + freeSlots.toString())));
-
-    }else if ("TerminAuswählen".equals(intent)) {
+        msg.setText(new GoogleCloudDialogflowV2IntentMessageText().setText(List.of("Freie Termine:\n"+String.join(", ", freeSlots))));
+    }
+    else if ("TerminAuswählen".equals(intent)) {
         String termin = getParameterString(parameters, "termin");
         msg = uiPathHandler.handleAppointmentSelection(request, termin, msg);
     } else if ("ContinuePatientIntent".equals(intent)) {
