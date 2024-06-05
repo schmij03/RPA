@@ -2,6 +2,7 @@ package ch.zhaw.rpa.arztpraxisuwebhookhandler.controller;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2Webhoo
 import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2WebhookResponse;
 
 import ch.zhaw.rpa.arztpraxisuwebhookhandler.handler.UiPathHandler;
+import ch.zhaw.rpa.arztpraxisuwebhookhandler.service.GoogleCalendarService; // Import the missing class
 
 @RestController
 @RequestMapping(value = "api")
@@ -32,6 +34,9 @@ public class DialogFlowWebhookController {
 
     @Autowired
     private UiPathHandler uiPathHandler;
+
+    @Autowired
+    private GoogleCalendarService googleCalendarService;
 
     @GetMapping(value = "/test")
     public String testApi() {
@@ -77,7 +82,16 @@ public String webhook(@RequestBody String rawData) throws IOException {
     } else if ("TerminVereinbaren".equals(intent)) {
         String ahvNumber = getParameterString(parameters, "ahvNumber");
         msg = uiPathHandler.handleAppointmentRequest(request, ahvNumber, msg);
-    } else if ("TerminAuswählen".equals(intent)) {
+    
+    } else if ("FindFreeTimeSlots".equals(intent)) {
+        String calendarId = "rpaarztpraxis@gmail.com"; // Use your calendar ID
+        Date date = new Date();
+        int d = 7;
+        List<String> freeSlots = googleCalendarService.findFreeTimeSlots(calendarId, date, d);
+        System.out.println("Free slots: " + freeSlots); // Print to console
+        msg.setText(new GoogleCloudDialogflowV2IntentMessageText().setText(List.of("Free slots: " + freeSlots.toString())));
+
+    }else if ("TerminAuswählen".equals(intent)) {
         String termin = getParameterString(parameters, "termin");
         msg = uiPathHandler.handleAppointmentSelection(request, termin, msg);
     } else if ("ContinuePatientIntent".equals(intent)) {

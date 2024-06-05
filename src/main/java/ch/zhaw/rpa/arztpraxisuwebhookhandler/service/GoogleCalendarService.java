@@ -23,41 +23,53 @@ public class GoogleCalendarService {
         return (List<Map<String, Object>>) response.get("items");
     }
 
-    public List<String> findFreeTimeSlots(String calendarId, Date date) {
+    public List<String> findFreeTimeSlots(String calendarId, Date startDate, int countDays) {
         List<Map<String, Object>> events = getCalendarEvents(calendarId);
         List<String> freeSlots = new ArrayList<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-
-        String dateString = dateFormat.format(date);
-
-        List<String> workPeriods = Arrays.asList(
-                dateString + "T08:00:00",
-                dateString + "T12:00:00",
-                dateString + "T13:00:00",
-                dateString + "T17:00:00"
-        );
-
-        for (int i = 0; i < workPeriods.size(); i += 2) {
-            String startPeriod = workPeriods.get(i);
-            String endPeriod = workPeriods.get(i + 1);
-            boolean isFree = true;
-
-            for (Map<String, Object> event : events) {
-                String start = (String) ((Map<String, Object>) event.get("start")).get("dateTime");
-                String end = (String) ((Map<String, Object>) event.get("end")).get("dateTime");
-
-                if ((start.compareTo(startPeriod) < 0 && end.compareTo(startPeriod) > 0) || (start.compareTo(endPeriod) < 0 && end.compareTo(endPeriod) > 0)) {
-                    isFree = false;
-                    break;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startDate);
+    
+        for (int day = 0; day < countDays; day++) {
+            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+            if (dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY) {
+                calendar.add(Calendar.DATE, 1);
+                continue;
+            }
+    
+            String dateString = dateFormat.format(calendar.getTime());
+            List<String> workPeriods = Arrays.asList(
+                    dateString + "T08:00:00",
+                    dateString + "T12:00:00",
+                    dateString + "T13:00:00",
+                    dateString + "T17:00:00"
+            );
+    
+            for (int i = 0; i < workPeriods.size(); i += 2) {
+                String startPeriod = workPeriods.get(i);
+                String endPeriod = workPeriods.get(i + 1);
+                boolean isFree = true;
+    
+                for (Map<String, Object> event : events) {
+                    String start = (String) ((Map<String, Object>) event.get("start")).get("dateTime");
+                    String end = (String) ((Map<String, Object>) event.get("end")).get("dateTime");
+    
+                    if ((start.compareTo(startPeriod) < 0 && end.compareTo(startPeriod) > 0) || (start.compareTo(endPeriod) < 0 && end.compareTo(endPeriod) > 0)) {
+                        isFree = false;
+                        break;
+                    }
+                }
+    
+                if (isFree) {
+                    freeSlots.add(startPeriod + " to " + endPeriod);
                 }
             }
-
-            if (isFree) {
-                freeSlots.add(startPeriod + " to " + endPeriod);
-            }
+    
+            calendar.add(Calendar.DATE, 1);
         }
-
+    
         return freeSlots;
     }
+    
 }
