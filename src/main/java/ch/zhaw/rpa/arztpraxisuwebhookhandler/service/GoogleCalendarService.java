@@ -4,12 +4,10 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
-import com.google.api.services.calendar.model.FreeBusyRequest;
-import com.google.api.services.calendar.model.FreeBusyRequestItem;
-import com.google.api.services.calendar.model.FreeBusyResponse;
-import com.google.api.services.calendar.model.TimePeriod;
+import com.google.api.services.calendar.model.*;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -32,19 +31,21 @@ public class GoogleCalendarService {
 
     private Calendar getCalendarService() throws GeneralSecurityException, IOException {
         GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(credentialsFilePath))
-            .createScoped(Collections.singleton(CalendarScopes.CALENDAR));
+                .createScoped(Collections.singleton(CalendarScopes.CALENDAR));
         HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(credentials);
 
         return new Calendar.Builder(GoogleNetHttpTransport.newTrustedTransport(), JSON_FACTORY, requestInitializer)
-            .setApplicationName(APPLICATION_NAME)
-            .build();
+                .setApplicationName(APPLICATION_NAME)
+                .build();
     }
 
     public List<String> findFreeTimeSlots(String calendarId, Date startDate, int countDays) {
         try {
             Calendar service = getCalendarService();
             SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-            java.util.Calendar calendar = java.util.Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            dateTimeFormat.setTimeZone(TimeZone.getTimeZone("Europe/Zurich"));
+
+            java.util.Calendar calendar = java.util.Calendar.getInstance(TimeZone.getTimeZone("Europe/Zurich"));
             calendar.setTime(startDate);
 
             String timeMin = dateTimeFormat.format(startDate);
@@ -52,14 +53,15 @@ public class GoogleCalendarService {
             String timeMax = dateTimeFormat.format(calendar.getTime());
 
             FreeBusyRequest request = new FreeBusyRequest()
-                .setTimeMin(new com.google.api.client.util.DateTime(timeMin))
-                .setTimeMax(new com.google.api.client.util.DateTime(timeMax))
-                .setItems(Collections.singletonList(new FreeBusyRequestItem().setId(calendarId)));
+                    .setTimeMin(new com.google.api.client.util.DateTime(timeMin))
+                    .setTimeMax(new com.google.api.client.util.DateTime(timeMax))
+                    .setItems(Collections.singletonList(new FreeBusyRequestItem().setId(calendarId)));
 
             FreeBusyResponse response = service.freebusy().query(request).execute();
             List<TimePeriod> busyTimes = response.getCalendars().get(calendarId).getBusy();
 
-            return getFreeSlots(startDate, countDays, busyTimes);
+            List<String> freeSlots = getFreeSlots(startDate, countDays, busyTimes);
+            return formatFreeSlots(freeSlots);
         } catch (GeneralSecurityException | IOException e) {
             e.printStackTrace();
             return Collections.emptyList();
@@ -70,7 +72,10 @@ public class GoogleCalendarService {
         List<String> freeSlots = new ArrayList<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-        java.util.Calendar calendar = java.util.Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        dateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Zurich"));
+        timeFormat.setTimeZone(TimeZone.getTimeZone("Europe/Zurich"));
+
+        java.util.Calendar calendar = java.util.Calendar.getInstance(TimeZone.getTimeZone("Europe/Zurich"));
         calendar.setTime(startDate);
 
         for (int day = 0; day < countDays; day++) {
@@ -81,22 +86,13 @@ public class GoogleCalendarService {
             }
 
             String dateString = dateFormat.format(calendar.getTime());
-            List<String> workPeriods = Arrays.asList(
-                    dateString + " " + "08:00",
-                    dateString + " " + "12:00",
-                    dateString + " " + "13:00",
-                    dateString + " " + "17:00"
-            );
+            String morningStart = dateString + " 08:00";
+            String noonEnd = dateString + " 12:00";
+            String afternoonStart = dateString + " 13:00";
+            String eveningEnd = dateString + " 17:00";
 
-            for (int i = 0; i < workPeriods.size(); i += 2) {
-                String startPeriod = workPeriods.get(i);
-                String endPeriod = workPeriods.get(i + 1);
-                boolean isFree = isPeriodFree(startPeriod, endPeriod, busyTimes, dateFormat, timeFormat);
-
-                if (isFree) {
-                    freeSlots.add(startPeriod + " bis " + endPeriod.split(" ")[1]);
-                }
-            }
+            findPartialFreeSlots(morningStart, noonEnd, busyTimes, freeSlots);
+            findPartialFreeSlots(afternoonStart, eveningEnd, busyTimes, freeSlots);
 
             calendar.add(java.util.Calendar.DAY_OF_MONTH, 1);
         }
@@ -104,20 +100,96 @@ public class GoogleCalendarService {
         return freeSlots;
     }
 
-    private boolean isPeriodFree(String startPeriod, String endPeriod, List<TimePeriod> busyTimes, SimpleDateFormat dateFormat, SimpleDateFormat timeFormat) {
+    private List<String> formatFreeSlots(List<String> freeSlots) {
+        List<String> formattedSlots = new ArrayList<>();
+        SimpleDateFormat inputFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+
+        for (String slot : freeSlots) {
+            try {
+                String[] times = slot.split(" bis ");
+                Date startDate = inputFormat.parse(times[0]);
+                Date endDate = inputFormat.parse(times[1]);
+
+                String formattedSlot = dateFormat.format(startDate) + " " +
+                    timeFormat.format(startDate) + " bis " + 
+                    timeFormat.format(endDate);
+                formattedSlots.add(formattedSlot);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return formattedSlots;
+    }
+
+    private void findPartialFreeSlots(String startPeriod, String endPeriod, List<TimePeriod> busyTimes, List<String> freeSlots) {
         try {
-            Date start = new SimpleDateFormat("dd.MM.yyyy HH:mm").parse(startPeriod);
-            Date end = new SimpleDateFormat("dd.MM.yyyy HH:mm").parse(endPeriod);
+            SimpleDateFormat periodFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+            periodFormat.setTimeZone(TimeZone.getTimeZone("Europe/Zurich"));
+
+            Date periodStart = periodFormat.parse(startPeriod);
+            Date periodEnd = periodFormat.parse(endPeriod);
+
             for (TimePeriod busyTime : busyTimes) {
-                Date busyStart = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").parse(busyTime.getStart().toString());
-                Date busyEnd = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").parse(busyTime.getEnd().toString());
-                if ((start.before(busyEnd) && end.after(busyStart)) || start.equals(busyStart) || end.equals(busyEnd)) {
-                    return false;
+                Date busyStart = new Date(busyTime.getStart().getValue());
+                Date busyEnd = new Date(busyTime.getEnd().getValue());
+
+                if (busyStart.before(periodEnd) && busyEnd.after(periodStart)) {
+                    // Adjust start and end times based on busy period
+                    if (busyStart.after(periodStart)) {
+                        freeSlots.add(periodFormat.format(periodStart) + " bis " + periodFormat.format(busyStart));
+                    }
+                    periodStart = busyEnd;
                 }
             }
-        } catch (Exception e) {
+
+            if (periodStart.before(periodEnd)) {
+                freeSlots.add(periodFormat.format(periodStart) + " bis " + periodFormat.format(periodEnd));
+            }
+        } catch (ParseException e) {
             e.printStackTrace();
         }
-        return true;
     }
+    public String validateAndCreateEvent(String dateTimeStr) {
+        System.out.println("Creating event for: " + dateTimeStr);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX"); // Anpassung an das ISO 8601 Format mit Zeitzone
+        format.setLenient(false); // Stellen Sie sicher, dass das Datum genau dem Format entsprechen muss
+        try {
+            Date date = format.parse(dateTimeStr);
+            return createCalendarEvent(date);
+        } catch (ParseException e) {
+            return "Ungültiges Datumsformat. Bitte geben Sie das Datum im Format ''dd.MM.yyyy HH:mm' erneut ein. Beispiel: 01.01.2022 14:30";
+        }
+    }
+    
+    
+    public String createCalendarEvent(Date startDateTime) {
+        try {
+            Calendar service = getCalendarService();
+            Event event = new Event()
+                .setSummary("Geplanter Arzttermin")
+                .setDescription("Termin über Dialogflow erstellt.");
+    
+            DateTime start = new DateTime(startDateTime);
+            EventDateTime startEventDateTime = new EventDateTime().setDateTime(start);
+            event.setStart(startEventDateTime);
+    
+            
+            DateTime end = new DateTime(startDateTime.getTime() + 1800000);
+            EventDateTime endEventDateTime = new EventDateTime().setDateTime(end);
+            event.setEnd(endEventDateTime);
+    
+            // Zum Standardkalender hinzufügen
+            event = service.events().insert("rpaarztpraxis@gmail.com", event).execute();
+    
+            return "Termin erfolgreich für " + new SimpleDateFormat("dd.MM.yyyy 'um' HH:mm 'Uhr'").format(startDateTime) + " erstellt.";
+        } catch (GeneralSecurityException | IOException e) {
+            e.printStackTrace();
+            return "Fehler beim Erstellen des Termins: " + e.getMessage();
+        }
+    }
+    
+
 }

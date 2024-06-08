@@ -84,15 +84,17 @@ public String webhook(@RequestBody String rawData) throws IOException, GeneralSe
         String calendarId = "rpaarztpraxis@gmail.com"; // Use your calendar ID
         Date date = new Date();
         int d = 7;
-
+    
         List<String> freeSlots = googleCalendarService.findFreeTimeSlots(calendarId, date, d);
-        System.out.println("Free slots: " + freeSlots); // Print to console
-        msg.setText(new GoogleCloudDialogflowV2IntentMessageText().setText(List.of("Freie Termine:\n"+String.join(", ", freeSlots))));
+        msg.setText(new GoogleCloudDialogflowV2IntentMessageText().setText(List.of("Freie Termine:\n" + String.join(", ", freeSlots))));
     }
     else if ("TerminAuswählen".equals(intent)) {
-        String termin = getParameterString(parameters, "termin");
-        msg = uiPathHandler.handleAppointmentSelection(request, termin, msg);
-    } else if ("ContinuePatientIntent".equals(intent)) {
+        String termin = getParameterString(parameters, "dateTime");
+        String terminString = termin.replace("[{date_time=", "").replace("}]", "");
+        String responseMessage = googleCalendarService.validateAndCreateEvent(terminString);
+        msg.setText(new GoogleCloudDialogflowV2IntentMessageText().setText(List.of(responseMessage)));
+    }
+     else if ("ContinuePatientIntent".equals(intent)) {
         msg = uiPathHandler.handleContinueRequestForPatient(request, msg);
     } else if ("ContinueTerminIntent".equals(intent)) {
         msg = uiPathHandler.handleContinueRequestForAppointment(request, msg);
