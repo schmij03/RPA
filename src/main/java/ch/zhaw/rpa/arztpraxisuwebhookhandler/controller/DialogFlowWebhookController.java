@@ -86,11 +86,12 @@ public String webhook(@RequestBody String rawData) throws IOException, GeneralSe
         int d = 7;
     
         List<String> freeSlots = googleCalendarService.findFreeTimeSlots(calendarId, date, d);
-        msg.setText(new GoogleCloudDialogflowV2IntentMessageText().setText(List.of("Freie Termine:\n" + String.join(", ", freeSlots))));
+        msg.setText(new GoogleCloudDialogflowV2IntentMessageText().setText(List.of("Freie Termine:\n" + String.join(", ", freeSlots)+"\n \nBitte wählen Sie einen Termin aus.")));
     }
     else if ("TerminAuswählen".equals(intent)) {
         String termin = getParameterString(parameters, "dateTime");
         String terminString = termin.replace("[{date_time=", "").replace("}]", "");
+        String ahvNumber = getParameterString(parameters, "ahvNumber");
         String responseMessage = googleCalendarService.validateAndCreateEvent(terminString);
         msg.setText(new GoogleCloudDialogflowV2IntentMessageText().setText(List.of(responseMessage)));
     }
