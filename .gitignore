@@ -28,5 +28,4 @@
 /.vscode/
 /.sts4-cache/
 *.db
-src/main/resources/application.properties
 .factorypath
