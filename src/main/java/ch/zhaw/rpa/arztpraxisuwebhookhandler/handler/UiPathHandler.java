@@ -4,7 +4,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.regex.Matcher;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,6 +36,15 @@ public class UiPathHandler {
 
         // Prüfen, ob Session Id bereits verwaltet ist
         DialogFlowSessionState sessionState = stateService.getSessionStateBySessionId(sessionId);
+        
+        System.out.println("Check AHV");
+        if(! checkAhvNBumber(ahvNumber)){
+            GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
+            text.setText(List.of("Es wurde eine ungültige AHV-Nummer bei der Registrierung eingegeben. Bitte gib eine korrekte ein. "));
+            msg.setText(text);
+            stateService.removeSessionState(sessionState);
+            return msg;
+        }
 
         // Wenn die Session Id noch nicht verwaltet ist (erster Request)
         if (sessionState == null) {
@@ -78,6 +89,20 @@ public class UiPathHandler {
         }
 
         return msg;
+    }
+
+    private boolean checkAhvNBumber(String ahv){
+        // Define the regex pattern for the structure 123.4567.89.12
+        String regex = "\\d{3}\\.\\d{4}\\.\\d{4}\\.\\d{2}";
+        
+        // Compile the pattern
+        Pattern pattern = Pattern.compile(regex);
+        
+        // Match the input string against the pattern
+        Matcher matcher = pattern.matcher(ahv);
+        
+        // Return whether the input string matches the pattern
+        return matcher.matches();
     }
 
     public GoogleCloudDialogflowV2IntentMessage handleAppointmentRequest(GoogleCloudDialogflowV2WebhookRequest request,
