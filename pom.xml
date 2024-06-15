@@ -22,6 +22,19 @@
       <artifactId>google-api-client</artifactId>
       <version>1.32.1</version>
     </dependency>
+    <!-- MongoDB Java Driver -->
+    <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>mongodb-driver-sync</artifactId>
+      <version>4.7.1</version>
+    </dependency>
+        
+    <!-- BSON library -->
+    <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>bson</artifactId>
+      <version>4.7.1</version>
+    </dependency>
     
     <!-- Google OAuth Client -->
     <dependency>
