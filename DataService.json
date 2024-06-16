@@ -1,0 +1,1437 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Entity Store defaulttenant",
+    "description": "OpenAPI Specification for defaulttenant entity store."
+  },
+  "paths": {
+    "/EntityService/PatientRPA/read": {
+      "get": {
+        "tags": [
+          "PatientRPA"
+        ],
+        "description": "Reads all PatientRPA records.",
+        "operationId": "Get PatientRPA records",
+        "security": [
+          {
+            "bearerAuth": [
+              "DataService.Data.Read"
+            ]
+          },
+          {
+            "oauth2": [
+              "DataService.Data.Read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "description": "(Optional) Specifies the number of records to skip before starting to return records from the query. Can be used along with limit property to implement pagination. Default value is 0 if not specified. The sort order is based on Id field.",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": "0"
+            },
+            "required": false
+          },
+          {
+            "name": "limit",
+            "description": "(Optional) Specifies the maximum number of records to read from service. Can be used along with start property to implement pagination. Default value is 100 if not specified. The maximum value can be 1000.",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": "20"
+            },
+            "required": false
+          },
+          {
+            "name": "expansionLevel",
+            "description": "(Optional) Specifies the depth of related records to be retrieved from the service. This property supports values from 1 to 3.",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": "2"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatientRPAQueryResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenError"
+          }
+        }
+      }
+    },
+    "/EntityService/PatientRPA/read/{id}": {
+      "get": {
+        "tags": [
+          "PatientRPA"
+        ],
+        "description": "Retrieves a single PatientRPA record by Id.",
+        "operationId": "Get PatientRPA",
+        "security": [
+          {
+            "bearerAuth": [
+              "DataService.Data.Read"
+            ]
+          },
+          {
+            "oauth2": [
+              "DataService.Data.Read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "description": "The Id of the record to retrieve/modify from Data Service.",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "default": null
+            },
+            "required": true
+          },
+          {
+            "name": "expansionLevel",
+            "description": "(Optional) Specifies the depth of related records to be retrieved from the service. This property supports values from 1 to 3.",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": "2"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatientRPA"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenError"
+          }
+        }
+      }
+    },
+    "/EntityService/PatientRPA/query": {
+      "post": {
+        "tags": [
+          "PatientRPA"
+        ],
+        "description": "Query PatientRPA records.",
+        "operationId": "Query PatientRPA",
+        "security": [
+          {
+            "bearerAuth": [
+              "DataService.Data.Read"
+            ]
+          },
+          {
+            "oauth2": [
+              "DataService.Data.Read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "expansionLevel",
+            "description": "(Optional) Specifies the depth of related records to be retrieved from the service. This property supports values from 1 to 3.",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": "2"
+            },
+            "required": false
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QueryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatientRPAQueryResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenError"
+          }
+        }
+      }
+    },
+    "/EntityService/PatientRPA/delete/{id}": {
+      "delete": {
+        "tags": [
+          "PatientRPA"
+        ],
+        "description": "Deletes an existing PatientRPA record.",
+        "operationId": "Delete PatientRPA",
+        "security": [
+          {
+            "bearerAuth": [
+              "DataService.Data.Write"
+            ]
+          },
+          {
+            "oauth2": [
+              "DataService.Data.Write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "description": "The Id of the record to retrieve/modify from Data Service.",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "default": null
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Boolean"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenError"
+          }
+        }
+      }
+    },
+    "/EntityService/PatientRPA/update/{id}": {
+      "post": {
+        "tags": [
+          "PatientRPA"
+        ],
+        "description": "Updates an existing PatientRPA record.",
+        "operationId": "Update PatientRPA",
+        "security": [
+          {
+            "bearerAuth": [
+              "DataService.Data.Write"
+            ]
+          },
+          {
+            "oauth2": [
+              "DataService.Data.Write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "description": "The Id of the record to retrieve/modify from Data Service.",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "default": null
+            },
+            "required": true
+          },
+          {
+            "name": "expansionLevel",
+            "description": "(Optional) Specifies the depth of related records to be retrieved from the service. This property supports values from 1 to 3.",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": "2"
+            },
+            "required": false
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatientRPA"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatientRPA"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenError"
+          }
+        }
+      }
+    },
+    "/EntityService/PatientRPA/insert": {
+      "post": {
+        "tags": [
+          "PatientRPA"
+        ],
+        "description": "Creates a new PatientRPA record.",
+        "operationId": "Add PatientRPA",
+        "security": [
+          {
+            "bearerAuth": [
+              "DataService.Data.Write"
+            ]
+          },
+          {
+            "oauth2": [
+              "DataService.Data.Write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "expansionLevel",
+            "description": "(Optional) Specifies the depth of related records to be retrieved from the service. This property supports values from 1 to 3.",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": "2"
+            },
+            "required": false
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatientRPA"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatientRPA"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenError"
+          }
+        }
+      }
+    },
+    "/EntityService/PatientRPA/insert-batch": {
+      "post": {
+        "tags": [
+          "PatientRPA"
+        ],
+        "description": "Creates multiple new PatientRPA records in a batch.",
+        "operationId": "Batch Add PatientRPA",
+        "security": [
+          {
+            "bearerAuth": [
+              "DataService.Data.Write"
+            ]
+          },
+          {
+            "oauth2": [
+              "DataService.Data.Write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "expansionLevel",
+            "description": "(Optional) Specifies the depth of related records to be retrieved from the service. This property supports values from 1 to 3.",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": "2"
+            },
+            "required": false
+          },
+          {
+            "name": "failOnFirst",
+            "description": "(Optional) Specifies if Data Service should stop processing the remaining records when a record fails to process. If set to true, Data Service will stop processing records on the first failure. This property only supports Boolean values (true, false).",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "format": "string",
+              "default": "false"
+            },
+            "required": false
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PatientRPA"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatientRPABatchResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenError"
+          }
+        }
+      }
+    },
+    "/EntityService/PatientRPA/update-batch": {
+      "post": {
+        "tags": [
+          "PatientRPA"
+        ],
+        "description": "Updates multiple existing PatientRPA records in a batch.",
+        "operationId": "Batch Update PatientRPA",
+        "security": [
+          {
+            "bearerAuth": [
+              "DataService.Data.Write"
+            ]
+          },
+          {
+            "oauth2": [
+              "DataService.Data.Write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "expansionLevel",
+            "description": "(Optional) Specifies the depth of related records to be retrieved from the service. This property supports values from 1 to 3.",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": "2"
+            },
+            "required": false
+          },
+          {
+            "name": "failOnFirst",
+            "description": "(Optional) Specifies if Data Service should stop processing the remaining records when a record fails to process. If set to true, Data Service will stop processing records on the first failure. This property only supports Boolean values (true, false).",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "format": "string",
+              "default": "false"
+            },
+            "required": false
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PatientRPA"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatientRPABatchResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenError"
+          }
+        }
+      }
+    },
+    "/EntityService/PatientRPA/delete-batch": {
+      "post": {
+        "tags": [
+          "PatientRPA"
+        ],
+        "description": "Deletes multiple existing PatientRPA records in a batch.",
+        "operationId": "Batch Delete PatientRPA",
+        "security": [
+          {
+            "bearerAuth": [
+              "DataService.Data.Write"
+            ]
+          },
+          {
+            "oauth2": [
+              "DataService.Data.Write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "failOnFirst",
+            "description": "(Optional) Specifies if Data Service should stop processing the remaining records when a record fails to process. If set to true, Data Service will stop processing records on the first failure. This property only supports Boolean values (true, false).",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "format": "string",
+              "default": "false"
+            },
+            "required": false
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Id"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatientRPABatchResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenError"
+          }
+        }
+      }
+    },
+    "/EntityService/PatientRPA/bulk-upload": {
+      "post": {
+        "tags": [
+          "PatientRPA"
+        ],
+        "description": "Import data for an existing entity PatientRPA.",
+        "operationId": "Import data to PatientRPA",
+        "security": [
+          {
+            "bearerAuth": [
+              "DataService.Data.Write"
+            ]
+          },
+          {
+            "oauth2": [
+              "DataService.Data.Write"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkUploadResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenError"
+          }
+        }
+      }
+    },
+    "/Attachment/PatientRPA/{recordId}/{fieldName}": {
+      "get": {
+        "tags": [
+          "PatientRPA"
+        ],
+        "description": "Downloads file from the specified field of an existing PatientRPA record.",
+        "operationId": "Download file from PatientRPA",
+        "security": [
+          {
+            "bearerAuth": [
+              "DataService.Data.Read"
+            ]
+          },
+          {
+            "oauth2": [
+              "DataService.Data.Read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "recordId",
+            "description": "The Id of the record to retrieve/modify from Data Service.",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "default": null
+            },
+            "required": true
+          },
+          {
+            "name": "fieldName",
+            "description": "The name of the File field to modify for the specified record in entity $PatientRPA. The name has to be a valid field and is case-sensitive.",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "string",
+              "default": null
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "PatientRPA"
+        ],
+        "description": "Uploads file to the specified field of an existing PatientRPA record.",
+        "operationId": "Upload file to PatientRPA",
+        "security": [
+          {
+            "bearerAuth": [
+              "DataService.Data.Write"
+            ]
+          },
+          {
+            "oauth2": [
+              "DataService.Data.Write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "recordId",
+            "description": "The Id of the record to retrieve/modify from Data Service.",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "default": null
+            },
+            "required": true
+          },
+          {
+            "name": "fieldName",
+            "description": "The name of the File field to modify for the specified record in entity $PatientRPA. The name has to be a valid field and is case-sensitive.",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "string",
+              "default": null
+            },
+            "required": true
+          },
+          {
+            "name": "expansionLevel",
+            "description": "(Optional) Specifies the depth of related records to be retrieved from the service. This property supports values from 1 to 3.",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": "2"
+            },
+            "required": false
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "PatientRPA"
+        ],
+        "description": "Deletes file from the specified field of an existing PatientRPA record.",
+        "operationId": "Delete file from PatientRPA",
+        "security": [
+          {
+            "bearerAuth": [
+              "DataService.Data.Write"
+            ]
+          },
+          {
+            "oauth2": [
+              "DataService.Data.Write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "recordId",
+            "description": "The Id of the record to retrieve/modify from Data Service.",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "default": null
+            },
+            "required": true
+          },
+          {
+            "name": "fieldName",
+            "description": "The name of the File field to modify for the specified record in entity $PatientRPA. The name has to be a valid field and is case-sensitive.",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "string",
+              "default": null
+            },
+            "required": true
+          },
+          {
+            "name": "expansionLevel",
+            "description": "(Optional) Specifies the depth of related records to be retrieved from the service. This property supports values from 1 to 3.",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": "2"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenError"
+          }
+        }
+      }
+    },
+    "/EntityService/SystemUser/read": {
+      "get": {
+        "tags": [
+          "SystemUser"
+        ],
+        "description": "Reads all SystemUser records.",
+        "operationId": "Get SystemUser records",
+        "security": [
+          {
+            "bearerAuth": [
+              "DataService.Data.Read"
+            ]
+          },
+          {
+            "oauth2": [
+              "DataService.Data.Read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "description": "(Optional) Specifies the number of records to skip before starting to return records from the query. Can be used along with limit property to implement pagination. Default value is 0 if not specified. The sort order is based on Id field.",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": "0"
+            },
+            "required": false
+          },
+          {
+            "name": "limit",
+            "description": "(Optional) Specifies the maximum number of records to read from service. Can be used along with start property to implement pagination. Default value is 100 if not specified. The maximum value can be 1000.",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": "20"
+            },
+            "required": false
+          },
+          {
+            "name": "expansionLevel",
+            "description": "(Optional) Specifies the depth of related records to be retrieved from the service. This property supports values from 1 to 3.",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": "2"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemUserQueryResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenError"
+          }
+        }
+      }
+    },
+    "/EntityService/SystemUser/read/{id}": {
+      "get": {
+        "tags": [
+          "SystemUser"
+        ],
+        "description": "Retrieves a single SystemUser record by Id.",
+        "operationId": "Get SystemUser",
+        "security": [
+          {
+            "bearerAuth": [
+              "DataService.Data.Read"
+            ]
+          },
+          {
+            "oauth2": [
+              "DataService.Data.Read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "description": "The Id of the record to retrieve/modify from Data Service.",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "default": null
+            },
+            "required": true
+          },
+          {
+            "name": "expansionLevel",
+            "description": "(Optional) Specifies the depth of related records to be retrieved from the service. This property supports values from 1 to 3.",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": "2"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemUser"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenError"
+          }
+        }
+      }
+    },
+    "/EntityService/SystemUser/query": {
+      "post": {
+        "tags": [
+          "SystemUser"
+        ],
+        "description": "Query SystemUser records.",
+        "operationId": "Query SystemUser",
+        "security": [
+          {
+            "bearerAuth": [
+              "DataService.Data.Read"
+            ]
+          },
+          {
+            "oauth2": [
+              "DataService.Data.Read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "expansionLevel",
+            "description": "(Optional) Specifies the depth of related records to be retrieved from the service. This property supports values from 1 to 3.",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": "2"
+            },
+            "required": false
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QueryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemUserQueryResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenError"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://cloud.uipath.com/rpaarztpraxis/defaulttenant/dataservice_/api"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "UserType": {
+        "type": "integer",
+        "x-uipath-dataservice-type": "choiceset",
+        "enum": [
+          2,
+          1,
+          3,
+          0
+        ],
+        "x-enum-varnames": [
+          "Robot",
+          "Group",
+          "Application",
+          "User"
+        ]
+      },
+      "PatientRPA": {
+        "type": "object",
+        "x-uipath-dataservice-type": "entity",
+        "properties": {
+          "ahvNumber": {
+            "type": "string",
+            "format": "",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "format": "",
+            "nullable": true
+          },
+          "handynummer": {
+            "type": "string",
+            "format": "",
+            "nullable": true
+          },
+          "nachname": {
+            "type": "string",
+            "format": "",
+            "nullable": true
+          },
+          "vorname": {
+            "type": "string",
+            "format": "",
+            "nullable": true
+          },
+          "Historie": {
+            "type": "string",
+            "format": "",
+            "nullable": true
+          },
+          "UpdateTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "UpdatedBy": {
+            "$ref": "#/components/schemas/SystemUser"
+          },
+          "Id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": false
+          },
+          "CreateTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": false
+          },
+          "CreatedBy": {
+            "$ref": "#/components/schemas/SystemUser"
+          }
+        }
+      },
+      "PatientRPAQueryResponse": {
+        "type": "object",
+        "properties": {
+          "totalRecordCount": {
+            "description": "The total number of records matching the specified query filters in the service. Can be used with start and limit properties of QueryRequest to implement pagination.",
+            "type": "integer",
+            "format": "int64"
+          },
+          "value": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PatientRPA"
+            }
+          }
+        }
+      },
+      "PatientRPABatchResponse": {
+        "type": "object",
+        "properties": {
+          "successRecords": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PatientRPA"
+            }
+          },
+          "failureRecords": {
+            "type": "array",
+            "properties": {
+              "error": {
+                "type": "string"
+              },
+              "record": {
+                "$ref": "#/components/schemas/PatientRPA"
+              }
+            }
+          }
+        }
+      },
+      "SystemUser": {
+        "type": "object",
+        "x-uipath-dataservice-type": "entity",
+        "properties": {
+          "Id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": false
+          },
+          "Name": {
+            "type": "string",
+            "format": "",
+            "nullable": false
+          },
+          "Email": {
+            "type": "string",
+            "format": "",
+            "nullable": true
+          },
+          "Type": {
+            "$ref": "#/components/schemas/UserType"
+          },
+          "UpdateTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "CreateTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": false
+          },
+          "IsActive": {
+            "type": "boolean",
+            "format": "",
+            "nullable": false
+          }
+        }
+      },
+      "SystemUserQueryResponse": {
+        "type": "object",
+        "properties": {
+          "totalRecordCount": {
+            "description": "The total number of records matching the specified query filters in the service. Can be used with start and limit properties of QueryRequest to implement pagination.",
+            "type": "integer",
+            "format": "int64"
+          },
+          "value": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SystemUser"
+            }
+          }
+        }
+      },
+      "SystemUserBatchResponse": {
+        "type": "object",
+        "properties": {
+          "successRecords": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SystemUser"
+            }
+          },
+          "failureRecords": {
+            "type": "array",
+            "properties": {
+              "error": {
+                "type": "string"
+              },
+              "record": {
+                "$ref": "#/components/schemas/SystemUser"
+              }
+            }
+          }
+        }
+      },
+      "QueryRequest": {
+        "type": "object",
+        "properties": {
+          "selectedFields": {
+            "description": "(Optional) Specifies the list of fields to be returned for each record from the query. If left as null or the list is empty, all fields for the record will be returned. Default is null.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "filterGroup": {
+            "$ref": "#/components/schemas/QueryFilterGroup"
+          },
+          "start": {
+            "description": "(Optional) Specifies the number of records to skip before starting to return records from the query. Can be used along with limit property to implement pagination. Default value is 0 if not specified. The default sort order is based on Id field, use sortOptions to change the sort order.",
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "limit": {
+            "description": "(Optional) Specifies the maximum number of records to read from service. Can be used along with start property to implement pagination. Default value is 100 if not specified. The maximum value can be 1000.",
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "sortOptions": {
+            "description": "(Optional) Specifies the list of fields used to sort returned records. The default sort order is based on Id field if sortOptions are not provided.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SortOption"
+            }
+          }
+        }
+      },
+      "SortOption": {
+        "type": "object",
+        "properties": {
+          "fieldName": {
+            "description": "Specifies the name of the field used to sort returned records. The name has to be a valid field and is case-sensitive.",
+            "type": "string",
+            "format": ""
+          },
+          "isDescending": {
+            "type": "boolean",
+            "format": ""
+          }
+        }
+      },
+      "QueryFilterGroup": {
+        "type": "object",
+        "properties": {
+          "logicalOperator": {
+            "description": "Specifies if All (AND) or Any (OR) filters and filter groups should be used to filter records. Use 0 for All (AND) and 1 for Any (OR). Default is 0.",
+            "type": "integer",
+            "format": "int32",
+            "default": 0,
+            "minimum": 0,
+            "maximum": 1
+          },
+          "queryFilters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QueryFilter"
+            }
+          },
+          "filterGroups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QueryFilterGroup"
+            }
+          }
+        }
+      },
+      "QueryFilter": {
+        "type": "object",
+        "properties": {
+          "fieldName": {
+            "description": "Specifies the name of the field for filter operation.",
+            "type": "string",
+            "format": ""
+          },
+          "operator": {
+            "description": "Specifies the operator used for filter operation. Supported operators include: contains, not contains, startswith, endswith, =, !=, >, <, >=, <=, in, not in. Not all operators are supported for all field types.",
+            "type": "string",
+            "format": ""
+          },
+          "value": {
+            "description": "Specifies the value to use for the filter operation. An empty value with '=' operator does a null check and with '!=' operator does a not null check.",
+            "type": "string",
+            "format": ""
+          }
+        }
+      },
+      "Boolean": {
+        "type": "boolean"
+      },
+      "Id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "EntityAttachment": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "format": ""
+          },
+          "path": {
+            "type": "string",
+            "format": ""
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "type": {
+            "type": "string",
+            "format": ""
+          }
+        }
+      },
+      "BulkUploadResult": {
+        "type": "object",
+        "properties": {
+          "totalRecords": {
+            "description": "The total number of records to be uploaded to Data Service.",
+            "type": "integer",
+            "format": "int64"
+          },
+          "insertedRecords": {
+            "description": "The total number of records uploaded to Data Service.",
+            "type": "integer",
+            "format": "int64"
+          },
+          "errorFileLink": {
+            "description": "The file link for bulk upload error.",
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "oauth2": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "tokenUrl": "https://cloud.uipath.com/identity_/connect/token",
+            "authorizationUrl": "https://cloud.uipath.com/identity_/connect/authorize",
+            "scopes": {
+              "DataService.Schema.Read": "Entity Schema Read",
+              "DataService.Data.Read": "Entity Data Read",
+              "DataService.Data.Write": "Entity Data Write"
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "UnauthorizedError": {
+        "description": "You are not authenticated to access Data Service. Make sure your Assistant or Robot is connected to a modern folder in your account."
+      },
+      "ForbiddenError": {
+        "description": "You don't have permission to access the entity, field or record or you are using an unsupported robot type. Please contact your administrator for necessary permissions."
+      }
+    }
+  }
+}
