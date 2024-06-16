@@ -108,8 +108,7 @@ public class DialogFlowWebhookController {
             msg.setText(text);
             //Save Patient to UiPath
             System.out.println("Handle Patient Registration");
-            msg = uiPathHandler.handlePatientRegistration(request, vorname, nachname, ahvNumber, email, handynummer,
-                    msg);
+            //msg = uiPathHandler.handlePatientRegistration(request, vorname, nachname, ahvNumber, email, handynummer,msg);
         } else if ("TerminVereinbaren".equals(intent)) {
             MongoClientConnection connection = new MongoClientConnection();
             String calendarId = "rpaarztpraxis@gmail.com"; // Use your calendar ID
