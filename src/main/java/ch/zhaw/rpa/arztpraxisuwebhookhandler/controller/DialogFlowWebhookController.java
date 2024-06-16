@@ -136,10 +136,9 @@ public class DialogFlowWebhookController {
         } else if ("TerminAuswählen".equals(intent)) {
             String termin = getParameterString(parameters, "dateTime");
             String ahvNumber = getParameterString(parameters, "ahvNumber");
-
+            String mail = "rpaarztpraxis@gmail.com";
             String terminString = termin.replace("[{date_time=", "").replace("}]", "");
-            String responseMessage = googleCalendarService.validateAndCreateEvent(terminString);
-           
+            String responseMessage = googleCalendarService.validateAndCreateEvent(terminString, mail);
             msg.setText(new GoogleCloudDialogflowV2IntentMessageText().setText(List.of(responseMessage)));
             
         } else if ("ContinuePatientIntent".equals(intent)) {
