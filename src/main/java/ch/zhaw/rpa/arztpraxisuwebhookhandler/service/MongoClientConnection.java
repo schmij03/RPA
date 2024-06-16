@@ -1,9 +1,7 @@
 package ch.zhaw.rpa.arztpraxisuwebhookhandler.service;
 
-import java.util.List;
-import java.util.Map;
-
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -14,31 +12,19 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 
 public class MongoClientConnection {
 
     private static final String CONNECTION_STRING = "mongodb+srv://rpa:rpa@cluster0.qyhbks8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
     private MongoClient mongoClient;
+    private MongoDatabase database;
+    private MongoCollection<Document> collection;
 
     public MongoClientConnection() {
         this.mongoClient = createMongoClient();
-    }
-
-    public static void main(String[] args) {
-        MongoClientConnection connection = new MongoClientConnection();
-
-        MongoDatabase database = connection.connectToDatabase();
-        MongoCollection<Document> collection = connection.getCollection(database, "Cluster0");
-
-        System.out.println("Connected to Database: " + database.getName());
-        System.out.println("Using Collection: " + collection.getNamespace().getCollectionName());
-
-        // Example usage
-        connection.saveToMongoDB(List.of(Map.of("exampleKey", "exampleValue")));
-        connection.clearMongoDB();
-
-        // Close the client connection when done
-        connection.closeClient();
+        this.database = connectToDatabase();
+        this.collection = getCollection(database, "Cluster0");
     }
 
     public MongoDatabase connectToDatabase() {
@@ -70,28 +56,43 @@ public class MongoClientConnection {
         return MongoClients.create(settings);
     }
 
-    public void saveToMongoDB(List<Map<String, Object>> data) {
-        MongoDatabase database = connectToDatabase();
-        MongoCollection<Document> collection = getCollection(database, "Cluster0");
+    public void savePatientToMongoDB(String name, String vorname, String ahvnummer, String email, String phonenumber) {
+        try {
+            Bson filter = Filters.eq("ahvnummer", ahvnummer);
+            Document existingPatient = collection.find(filter).first();
 
-        List<Document> documents = data.stream()
-                .map(Document::new)
-                .toList();
+            if (existingPatient != null) {
+                System.out.println("Patient with AHV number " + ahvnummer + " already exists.");
+            } else {
+                Document patient = new Document("name", name)
+                        .append("vorname", vorname)
+                        .append("ahvnummer", ahvnummer)
+                        .append("email", email)
+                        .append("phonenumber", phonenumber);
 
-        collection.insertMany(documents);
-        System.out.println("Data saved to MongoDB!");
+                collection.insertOne(patient);
+                System.out.println("Patient saved to MongoDB!");
+            }
+        } catch (MongoException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to save patient to MongoDB", e);
+        }
     }
 
-    public void clearMongoDB() {
-        MongoDatabase database = connectToDatabase();
-        MongoCollection<Document> collection = getCollection(database, "Cluster0");
+    public boolean checkIfPatientExists(String ahvnummer) {
+        Bson filter = Filters.eq("ahvnummer", ahvnummer);
+        Document existingPatient = collection.find(filter).first();
+        return existingPatient != null;
+    }
 
-        long deletedCount = collection.deleteMany(new Document()).getDeletedCount();
-
-        if (deletedCount > 0) {
-            System.out.println("Collection cleared.");
+    public String getEmailByAhvnummer(String ahvnummer) {
+        Bson filter = Filters.eq("ahvnummer", ahvnummer);
+        Document patient = collection.find(filter).first();
+        
+        if (patient != null) {
+            return patient.getString("email");
         } else {
-            System.out.println("No documents found to delete.");
+            return null;
         }
     }
 

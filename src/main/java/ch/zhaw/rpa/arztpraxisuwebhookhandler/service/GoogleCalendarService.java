@@ -152,44 +152,42 @@ public class GoogleCalendarService {
             e.printStackTrace();
         }
     }
-    public String validateAndCreateEvent(String dateTimeStr) {
+
+    public String validateAndCreateEvent(String dateTimeStr, String participantEmail) {
         System.out.println("Creating event for: " + dateTimeStr);
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX"); // Anpassung an das ISO 8601 Format mit Zeitzone
         format.setLenient(false); // Stellen Sie sicher, dass das Datum genau dem Format entsprechen muss
         try {
             Date date = format.parse(dateTimeStr);
-            return createCalendarEvent(date);
+            return createCalendarEvent(date, participantEmail);
         } catch (ParseException e) {
-            return "Ungültiges Datumsformat. Bitte geben Sie das Datum im Format ''dd.MM.yyyy HH:mm' erneut ein. Beispiel: 01.01.2022 14:30";
+            return "Ungültiges Datumsformat. Bitte geben Sie das Datum im Format 'yyyy-MM-dd'T'HH:mm:ssXXX' erneut ein. Beispiel: 2022-01-01T14:30:00+01:00";
         }
     }
-    
-    
-    public String createCalendarEvent(Date startDateTime) {
+
+    public String createCalendarEvent(Date startDateTime, String participantEmail) {
         try {
             Calendar service = getCalendarService();
             Event event = new Event()
                 .setSummary("Geplanter Arzttermin")
-                .setDescription("Termin über Dialogflow erstellt.");
-    
+                .setDescription("Termin über Dialogflow erstellt.")
+                .setAttendees(Collections.singletonList(new EventAttendee().setEmail(participantEmail))); // Teilnehmer hinzufügen
+
             DateTime start = new DateTime(startDateTime);
             EventDateTime startEventDateTime = new EventDateTime().setDateTime(start);
             event.setStart(startEventDateTime);
-    
-            
+
             DateTime end = new DateTime(startDateTime.getTime() + 1800000);
             EventDateTime endEventDateTime = new EventDateTime().setDateTime(end);
             event.setEnd(endEventDateTime);
-    
+
             // Zum Standardkalender hinzufügen
             event = service.events().insert("rpaarztpraxis@gmail.com", event).execute();
-    
+
             return "Termin erfolgreich für " + new SimpleDateFormat("dd.MM.yyyy 'um' HH:mm 'Uhr'").format(startDateTime) + " erstellt. \n \n Wenn Sie eine Terminbestätigung wünschen schreiben Sie bitte 'Bestätigung'.";
         } catch (GeneralSecurityException | IOException e) {
             e.printStackTrace();
             return "Fehler beim Erstellen des Termins: " + e.getMessage();
         }
     }
-    
-
 }
