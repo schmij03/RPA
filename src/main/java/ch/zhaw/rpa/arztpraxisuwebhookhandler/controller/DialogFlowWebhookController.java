@@ -60,7 +60,7 @@ public class DialogFlowWebhookController {
     public String ahvNumber="";
     public String getUrl = "https://cloud.uipath.com/rpaarztpraxis/DefaultTenant/dataservice_/api/EntityService/PatientRPA/read";
     public String postUrl = "https://cloud.uipath.com/rpaarztpraxis/DefaultTenant/dataservice_/api/EntityService/PatientRPA/insert";
-    public String bearerToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjhDNzY1N0U2NEExNzNEMTRCNzhEQkIzRjRGQjdEQTJBMDFCNzE1MTEiLCJ4NXQiOiJqSFpYNWtvWFBSUzNqYnNfVDdmYUtnRzNGUkUiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2Nsb3VkLnVpcGF0aC5jb20vaWRlbnRpdHlfIiwibmJmIjoxNzE4NTQ3NTEzLCJpYXQiOjE3MTg1NDc4MTMsImV4cCI6MTcxODU1MTQxMywiYXVkIjoiRGF0YVNlcnZpY2VPcGVuQXBpIiwic2NvcGUiOlsiRGF0YVNlcnZpY2UuRGF0YS5SZWFkIiwiRGF0YVNlcnZpY2UuRGF0YS5Xcml0ZSIsIkRhdGFTZXJ2aWNlLlNjaGVtYS5SZWFkIl0sImFtciI6WyJleHRlcm5hbCJdLCJzdWJfdHlwZSI6InVzZXIiLCJwcnRfaWQiOiI0ZmU1YTY4My04MjMzLTQ4NzAtYmE0NS1lZTZhZTdmNmQzZTgiLCJjbGllbnRfaWQiOiJjODdhMmNkNS03NTYyLTQ3MjgtYjBjYS05N2U3OGE5MTQzMjYiLCJzdWIiOiI0ODkyYzcyYy02M2Q5LTRmOTItOTJlNC1lZDFmZGZiYzBjZDQiLCJhdXRoX3RpbWUiOjE3MTg1MzY3NjMsImlkcCI6Im9pZGMiLCJlbWFpbCI6InJwYWFyenRwcmF4aXNAZ21haWwuY29tIiwiQXNwTmV0LklkZW50aXR5LlNlY3VyaXR5U3RhbXAiOiJJNzRLS1BDN1RPNVNTNzJVWkROVDZBVjRVQVdXSVdPMyIsImF1dGgwX2NvbiI6Imdvb2dsZS1vYXV0aDIiLCJjb3VudHJ5IjoiU3dpdHplcmxhbmQiLCJleHRfc3ViIjoiZ29vZ2xlLW9hdXRoMnwxMDY0ODE0Mzc2NTEzNTUxNzYxOTIiLCJtYXJrZXRpbmdDb25kaXRpb25BY2NlcHRlZCI6IkZhbHNlIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0pPLWU5TFVGUVVQTjFyYXQ3LTNjOWplSS1uMDNlMTRuUlRNQnJSdHlIOTFlYWI1UT1zOTYtYyIsImhvc3QiOiJGYWxzZSIsImZpcnN0X25hbWUiOiJSUEEiLCJsYXN0X25hbWUiOiJBcnp0cHJheGlzIEFyenRwcmF4aXMiLCJwcnRfYWRtIjoiVHJ1ZSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJycGFhcnp0cHJheGlzQGdtYWlsLmNvbSIsIm5hbWUiOiJycGFhcnp0cHJheGlzQGdtYWlsLmNvbSIsImV4dF9pZHBfaWQiOiIxIiwiZXh0X2lkcF9kaXNwX25hbWUiOiJHbG9iYWxJZHAiLCJzaWQiOiI3NjRCODVFRTQ5RTNGNjA5N0NFRUE5QUFBN0FENzdCQSIsImp0aSI6Ijc5QzYwOTE5MTJDMkM1QTkxMjg2OTA2Q0MxRTY5NThBIn0.tOnkbU4HcjyIPJDr3upoexd08f_QXTnRwPHUQVWs-04aRZ4o4H8AzWek1lGx8JTuXHToBwt-MErY_070AnanM8lLbDyQm8nHTrtR7hGv5FPal-01681-hkSMoSAK7lS8psZTEJmjeX7WgWTarYX-UPC2XLZCLWycq4wxUqBdW2aP3bWtbinnqxDHlXvTq6j-CoT2NhWNNNibuN6iyXbv61SU-l3WU1hCR0qoaa0mpCCfSvEQx1ScwpiVtqGYPwKGvSoYsocw3ilApNLYf-U6ibFP3gez4SnwHaTr6ugZESOXfgJAxyeY9Ce3dVY96uvwJAt3TBQoawF1CIAcLq8AUQ";
+    public String bearerToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjhDNzY1N0U2NEExNzNEMTRCNzhEQkIzRjRGQjdEQTJBMDFCNzE1MTEiLCJ4NXQiOiJqSFpYNWtvWFBSUzNqYnNfVDdmYUtnRzNGUkUiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2Nsb3VkLnVpcGF0aC5jb20vaWRlbnRpdHlfIiwibmJmIjoxNzE4NTUyMjc0LCJpYXQiOjE3MTg1NTI1NzQsImV4cCI6MTcxODU1NjE3NCwiYXVkIjoiRGF0YVNlcnZpY2VPcGVuQXBpIiwic2NvcGUiOlsiRGF0YVNlcnZpY2UuRGF0YS5SZWFkIiwiRGF0YVNlcnZpY2UuRGF0YS5Xcml0ZSIsIkRhdGFTZXJ2aWNlLlNjaGVtYS5SZWFkIl0sImFtciI6WyJleHRlcm5hbCJdLCJzdWJfdHlwZSI6InVzZXIiLCJwcnRfaWQiOiI0ZmU1YTY4My04MjMzLTQ4NzAtYmE0NS1lZTZhZTdmNmQzZTgiLCJjbGllbnRfaWQiOiJjODdhMmNkNS03NTYyLTQ3MjgtYjBjYS05N2U3OGE5MTQzMjYiLCJzdWIiOiI0ODkyYzcyYy02M2Q5LTRmOTItOTJlNC1lZDFmZGZiYzBjZDQiLCJhdXRoX3RpbWUiOjE3MTg1MzY3NjMsImlkcCI6Im9pZGMiLCJlbWFpbCI6InJwYWFyenRwcmF4aXNAZ21haWwuY29tIiwiQXNwTmV0LklkZW50aXR5LlNlY3VyaXR5U3RhbXAiOiJJNzRLS1BDN1RPNVNTNzJVWkROVDZBVjRVQVdXSVdPMyIsImF1dGgwX2NvbiI6Imdvb2dsZS1vYXV0aDIiLCJjb3VudHJ5IjoiU3dpdHplcmxhbmQiLCJleHRfc3ViIjoiZ29vZ2xlLW9hdXRoMnwxMDY0ODE0Mzc2NTEzNTUxNzYxOTIiLCJtYXJrZXRpbmdDb25kaXRpb25BY2NlcHRlZCI6IkZhbHNlIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0pPLWU5TFVGUVVQTjFyYXQ3LTNjOWplSS1uMDNlMTRuUlRNQnJSdHlIOTFlYWI1UT1zOTYtYyIsImhvc3QiOiJGYWxzZSIsImZpcnN0X25hbWUiOiJSUEEiLCJsYXN0X25hbWUiOiJBcnp0cHJheGlzIEFyenRwcmF4aXMiLCJwcnRfYWRtIjoiVHJ1ZSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJycGFhcnp0cHJheGlzQGdtYWlsLmNvbSIsIm5hbWUiOiJycGFhcnp0cHJheGlzQGdtYWlsLmNvbSIsImV4dF9pZHBfaWQiOiIxIiwiZXh0X2lkcF9kaXNwX25hbWUiOiJHbG9iYWxJZHAiLCJzaWQiOiI3NjRCODVFRTQ5RTNGNjA5N0NFRUE5QUFBN0FENzdCQSIsImp0aSI6IkEzNjEwQzMwQzA3RDIyMDFEQjk0RTgyMzQwOTI0RDg1In0.J3-9Dq2kUkwSMVlqiBMHaadrX4TzOF84QO22kgtquUHi4J1ToJT9H0hXLDoCuwaq0jwIdk-9ew3ClO07JdJQ-h_raNtrpcI_a6GgE6izYzDwVJFqLoq3AkoLicHDuDGmMiDTUPCN1BZhP5RZqpmOkA9SWJsiPqaer6qy2BvtxLApNPujR_nPp_OijQsQ8VUoguFiKHOIF-LMcAokAz9CfV_LZccTQo56VhPGdAsPleLsvwMuXC66YnfU5taMBaja129i8DgpA1oXRj2Ihae21oHnPa1FlmmOxa_yDpY143-quEQKmuLKTHh_oR-anlyphOxp13k2JSVNIS4m6suHHQ";
 
     @GetMapping(value = "/test")
     public String testApi() {
@@ -101,11 +101,13 @@ public class DialogFlowWebhookController {
             String vorname = getParameterString(parameters, "vorname");
             String nachname = getParameterString(parameters, "nachname");
             String ahvNumber = getParameterString(parameters, "ahvNummer");
+            String cleaned_AHV = ahvNumber.replace("[", "").replace("]", "");
             String email = getParameterString(parameters, "email");
             String handynummer = getParameterString(parameters, "handynummer");
             // Save patient to MongoDB
             MongoClientConnection connection = new MongoClientConnection();
-            connection.savePatientToMongoDB(nachname, vorname, ahvNumber, email, handynummer);
+            
+            connection.savePatientToMongoDB(nachname, vorname, cleaned_AHV, email, handynummer);
             connection.closeClient();
 
             try {
@@ -114,7 +116,11 @@ public class DialogFlowWebhookController {
                 // Send GET request
                 String getResponse = sendGetRequest(getUrl, bearerToken);
                 System.out.println("GET Response: " + getResponse);
-                String cleaned_AHV = ahvNumber.replaceAll("\\[.*?\\]", "");
+                System.out.println("AHV Nummer bevor: " + ahvNumber.toString());
+           
+                
+                System.out.println("AHV Nummer danach: " + cleaned_AHV);
+
                 // Send POST request
                 JSONObject postData = new JSONObject();
                 postData.put("ahvNumber", cleaned_AHV);
@@ -124,9 +130,10 @@ public class DialogFlowWebhookController {
                 postData.put("vorname", vorname);
 
                 System.out.println("Postdata: " + postData.toString());
-                
-                String postResponse = sendPostRequest(postUrl, bearerToken, postData.toString());
-                System.out.println("POST Response: " + postResponse);
+                if(email != "default@example.com" &&  cleaned_AHV != "" && nachname != "" && vorname != "" && handynummer != "0"){
+                    String postResponse = sendPostRequest(postUrl, bearerToken, postData.toString());
+                    System.out.println("POST Response: " + postResponse);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

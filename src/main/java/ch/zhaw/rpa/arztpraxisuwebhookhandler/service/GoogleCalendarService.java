@@ -186,7 +186,7 @@ public class GoogleCalendarService {
             event = service.events().insert("rpaarztpraxis@gmail.com", event).execute();
 
             return "Termin erfolgreich für " + new SimpleDateFormat("dd.MM.yyyy 'um' HH:mm 'Uhr'").format(startDateTime)
-                    + " erstellt. \n \n Wenn Sie eine Terminbestätigung wünschen schreiben Sie bitte 'Bestätigung'.";
+                    + " erstellt. \n \n Die Terminbestätigung wurde soeben versendet.";
         } catch (GeneralSecurityException | IOException e) {
             e.printStackTrace();
             return "Fehler beim Erstellen des Termins: " + e.getMessage();
