@@ -26,12 +26,16 @@ public class GoogleCalendarService {
     @Value("${google.api.credentials.filepath}")
     private String credentialsFilePath;
 
+    @Value("${google.api.impersonated.user.email}")
+    private String impersonatedUserEmail;
+
     private static final String APPLICATION_NAME = "Google Calendar API Java Quickstart";
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
     private Calendar getCalendarService() throws GeneralSecurityException, IOException {
         GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(credentialsFilePath))
-                .createScoped(Collections.singleton(CalendarScopes.CALENDAR));
+                .createScoped(Collections.singleton(CalendarScopes.CALENDAR))
+                .createDelegated(impersonatedUserEmail);
         HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(credentials);
 
         return new Calendar.Builder(GoogleNetHttpTransport.newTrustedTransport(), JSON_FACTORY, requestInitializer)
