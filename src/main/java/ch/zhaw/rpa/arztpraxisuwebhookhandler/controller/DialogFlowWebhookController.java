@@ -114,17 +114,19 @@ public class DialogFlowWebhookController {
                 // Send GET request
                 String getResponse = sendGetRequest(getUrl, bearerToken);
                 System.out.println("GET Response: " + getResponse);
-                
+                String cleaned_AHV = ahvNumber.replaceAll("\\[.*?\\]", "");
                 // Send POST request
                 JSONObject postData = new JSONObject();
-                postData.put("ahvNumber", ahvNumber);
+                postData.put("ahvNumber", cleaned_AHV);
                 postData.put("email", email);
                 postData.put("handynummer", handynummer);
                 postData.put("nachname", nachname);
                 postData.put("vorname", vorname);
+
+                System.out.println("Postdata: " + postData.toString());
                 
-                //String postResponse = sendPostRequest(postUrl, bearerToken, postData.toString());
-                //System.out.println("POST Response: " + postResponse);
+                String postResponse = sendPostRequest(postUrl, bearerToken, postData.toString());
+                System.out.println("POST Response: " + postResponse);
             } catch (Exception e) {
                 e.printStackTrace();
             }
