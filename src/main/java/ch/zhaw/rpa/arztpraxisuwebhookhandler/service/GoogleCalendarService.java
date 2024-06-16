@@ -153,23 +153,23 @@ public class GoogleCalendarService {
         }
     }
 
-    public String validateAndCreateEvent(String dateTimeStr, String participantEmail) {
+    public String validateAndCreateEvent(String dateTimeStr, String participantEmail, String name) {
         System.out.println("Creating event for: " + dateTimeStr);
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX"); // Anpassung an das ISO 8601 Format mit Zeitzone
         format.setLenient(false); // Stellen Sie sicher, dass das Datum genau dem Format entsprechen muss
         try {
             Date date = format.parse(dateTimeStr);
-            return createCalendarEvent(date, participantEmail);
+            return createCalendarEvent(date, participantEmail, name);
         } catch (ParseException e) {
             return "Ungültiges Datumsformat. Bitte geben Sie das Datum im Format 'yyyy-MM-dd'T'HH:mm:ssXXX' erneut ein. Beispiel: 2022-01-01T14:30:00+01:00";
         }
     }
 
-    public String createCalendarEvent(Date startDateTime, String participantEmail) {
+    public String createCalendarEvent(Date startDateTime, String participantEmail, String name) {
         try {
             Calendar service = getCalendarService();
             Event event = new Event()
-                .setSummary("Geplanter Arzttermin")
+                .setSummary("Arzttermin: "+name)
                 .setDescription("Termin über Dialogflow erstellt.")
                 .setAttendees(Collections.singletonList(new EventAttendee().setEmail(participantEmail))); // Teilnehmer hinzufügen
 

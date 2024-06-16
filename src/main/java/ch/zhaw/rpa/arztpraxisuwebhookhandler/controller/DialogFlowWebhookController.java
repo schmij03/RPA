@@ -37,6 +37,7 @@ import ch.zhaw.rpa.arztpraxisuwebhookhandler.asynchandling.DialogFlowSessionStat
 import ch.zhaw.rpa.arztpraxisuwebhookhandler.asynchandling.DialogFlowSessionStateService;
 import ch.zhaw.rpa.arztpraxisuwebhookhandler.handler.UiPathHandler;
 import ch.zhaw.rpa.arztpraxisuwebhookhandler.service.GoogleCalendarService; // Import the missing class
+import ch.zhaw.rpa.arztpraxisuwebhookhandler.service.MongoClientConnection;
 
 @RestController
 @RequestMapping(value = "api")
@@ -53,6 +54,9 @@ public class DialogFlowWebhookController {
 
     @Autowired
     private GoogleCalendarService googleCalendarService;
+
+    @Autowired
+    public String ahvNumber="";
 
     @GetMapping(value = "/test")
     public String testApi() {
@@ -92,17 +96,26 @@ public class DialogFlowWebhookController {
             // Patientendaten erfassen
             String vorname = getParameterString(parameters, "vorname");
             String nachname = getParameterString(parameters, "nachname");
-            String ahvNumber = getParameterString(parameters, "AHVNumber");
+            ahvNumber = getParameterString(parameters, "AHVNumber");
             String email = getParameterString(parameters, "email");
             String handynummer = getParameterString(parameters, "handynummer");
+            // Save patient to MongoDB
+            MongoClientConnection connection = new MongoClientConnection();
+            connection.savePatientToMongoDB(nachname, vorname, ahvNumber, email, handynummer);
+            connection.closeClient();
+            GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
+            text.setText(List.of("Patient wurde erfolgreich registriert. Wenn Sie einen Termin benötigen schreiben Sie bitte 'Termin'?"));
+            msg.setText(text);
+            //Save Patient to UiPath
             System.out.println("Handle Patient Registration");
             msg = uiPathHandler.handlePatientRegistration(request, vorname, nachname, ahvNumber, email, handynummer,
                     msg);
         } else if ("TerminVereinbaren".equals(intent)) {
+            MongoClientConnection connection = new MongoClientConnection();
             String calendarId = "rpaarztpraxis@gmail.com"; // Use your calendar ID
             Date date = new Date();
             int d = 7;
-            String ahvNumber = getParameterString(parameters, "AHVNumber");
+            ahvNumber = getParameterString(parameters, "AHVNumber");
 
             //Get Request
             try {
@@ -125,7 +138,13 @@ public class DialogFlowWebhookController {
                 text.setText(List.of("Es wurde eine ungültige AHV-Nummer eingegeben. Bitte gib erneut Termin ein. "));
                 msg.setText(text);
                 stateService.removeSessionState(sessionState);
-            } else {
+            }else if (!connection.checkIfPatientExists(ahvNumber)) {
+                GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
+                text.setText(List.of("AHV-Nummer nicht gefunden. Bitte registrieren Sie sich zuerst. Geben Sie hierfür 'Registrieren' ein."));
+                msg.setText(text);
+                connection.closeClient();
+            } 
+            else {
 
                 List<String> freeSlots = googleCalendarService.findFreeTimeSlots(calendarId, date, d);
                 msg.setText(new GoogleCloudDialogflowV2IntentMessageText().setText(List.of(
@@ -135,10 +154,12 @@ public class DialogFlowWebhookController {
 
         } else if ("TerminAuswählen".equals(intent)) {
             String termin = getParameterString(parameters, "dateTime");
-            String ahvNumber = getParameterString(parameters, "ahvNumber");
-            String mail = "rpaarztpraxis@gmail.com";
+            MongoClientConnection connection = new MongoClientConnection();
+            String[] patientinfo = connection.getEmailAndNameByAhvnummer(ahvNumber);            
+            String mail = patientinfo != null && patientinfo.length > 0 ? patientinfo[0] : "";
+            String name = patientinfo != null && patientinfo.length > 1 ? patientinfo[1] : "";
             String terminString = termin.replace("[{date_time=", "").replace("}]", "");
-            String responseMessage = googleCalendarService.validateAndCreateEvent(terminString, mail);
+            String responseMessage = googleCalendarService.validateAndCreateEvent(terminString, mail, name);
             msg.setText(new GoogleCloudDialogflowV2IntentMessageText().setText(List.of(responseMessage)));
             
         } else if ("ContinuePatientIntent".equals(intent)) {

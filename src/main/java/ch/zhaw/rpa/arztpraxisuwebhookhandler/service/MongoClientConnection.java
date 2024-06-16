@@ -85,12 +85,14 @@ public class MongoClientConnection {
         return existingPatient != null;
     }
 
-    public String getEmailByAhvnummer(String ahvnummer) {
+    public String[] getEmailAndNameByAhvnummer(String ahvnummer) {
         Bson filter = Filters.eq("ahvnummer", ahvnummer);
         Document patient = collection.find(filter).first();
         
         if (patient != null) {
-            return patient.getString("email");
+            String mail = patient.getString("email");
+            String name = patient.getString("vorname") + " " + patient.getString("name");
+            return new String[] { mail, name };
         } else {
             return null;
         }
