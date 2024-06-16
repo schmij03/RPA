@@ -26,16 +26,12 @@ public class GoogleCalendarService {
     @Value("${google.api.credentials.filepath}")
     private String credentialsFilePath;
 
-    @Value("${google.api.impersonated.user.email}")
-    private String impersonatedUserEmail;
-
     private static final String APPLICATION_NAME = "Google Calendar API Java Quickstart";
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
     private Calendar getCalendarService() throws GeneralSecurityException, IOException {
         GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(credentialsFilePath))
-                .createScoped(Collections.singleton(CalendarScopes.CALENDAR))
-                .createDelegated(impersonatedUserEmail);
+                .createScoped(Collections.singleton(CalendarScopes.CALENDAR));
         HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(credentials);
 
         return new Calendar.Builder(GoogleNetHttpTransport.newTrustedTransport(), JSON_FACTORY, requestInitializer)
@@ -117,8 +113,8 @@ public class GoogleCalendarService {
                 Date endDate = inputFormat.parse(times[1]);
 
                 String formattedSlot = dateFormat.format(startDate) + " " +
-                    timeFormat.format(startDate) + " bis " + 
-                    timeFormat.format(endDate);
+                        timeFormat.format(startDate) + " bis " +
+                        timeFormat.format(endDate);
                 formattedSlots.add(formattedSlot);
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -128,7 +124,8 @@ public class GoogleCalendarService {
         return formattedSlots;
     }
 
-    private void findPartialFreeSlots(String startPeriod, String endPeriod, List<TimePeriod> busyTimes, List<String> freeSlots) {
+    private void findPartialFreeSlots(String startPeriod, String endPeriod, List<TimePeriod> busyTimes,
+            List<String> freeSlots) {
         try {
             SimpleDateFormat periodFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
             periodFormat.setTimeZone(TimeZone.getTimeZone("Europe/Zurich"));
@@ -159,7 +156,8 @@ public class GoogleCalendarService {
 
     public String validateAndCreateEvent(String dateTimeStr, String participantEmail, String name) {
         System.out.println("Creating event for: " + dateTimeStr);
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX"); // Anpassung an das ISO 8601 Format mit Zeitzone
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX"); // Anpassung an das ISO 8601 Format
+                                                                                    // mit Zeitzone
         format.setLenient(false); // Stellen Sie sicher, dass das Datum genau dem Format entsprechen muss
         try {
             Date date = format.parse(dateTimeStr);
@@ -172,10 +170,9 @@ public class GoogleCalendarService {
     public String createCalendarEvent(Date startDateTime, String participantEmail, String name) {
         try {
             Calendar service = getCalendarService();
-            Event event = new Event()
-                .setSummary("Arzttermin: "+name)
-                .setDescription("Termin über Dialogflow erstellt.")
-                .setAttendees(Collections.singletonList(new EventAttendee().setEmail(participantEmail))); // Teilnehmer hinzufügen
+            Event event = new Event().setSummary("Arzttermin: " + name).setDescription(participantEmail);
+                    // .setAttendees(Collections.singletonList(new
+            // EventAttendee().setEmail(participantEmail))); // Teilnehmer hinzufügen
 
             DateTime start = new DateTime(startDateTime);
             EventDateTime startEventDateTime = new EventDateTime().setDateTime(start);
@@ -188,7 +185,8 @@ public class GoogleCalendarService {
             // Zum Standardkalender hinzufügen
             event = service.events().insert("rpaarztpraxis@gmail.com", event).execute();
 
-            return "Termin erfolgreich für " + new SimpleDateFormat("dd.MM.yyyy 'um' HH:mm 'Uhr'").format(startDateTime) + " erstellt. \n \n Wenn Sie eine Terminbestätigung wünschen schreiben Sie bitte 'Bestätigung'.";
+            return "Termin erfolgreich für " + new SimpleDateFormat("dd.MM.yyyy 'um' HH:mm 'Uhr'").format(startDateTime)
+                    + " erstellt. \n \n Wenn Sie eine Terminbestätigung wünschen schreiben Sie bitte 'Bestätigung'.";
         } catch (GeneralSecurityException | IOException e) {
             e.printStackTrace();
             return "Fehler beim Erstellen des Termins: " + e.getMessage();
