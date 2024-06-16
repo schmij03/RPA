@@ -58,6 +58,7 @@ public class DialogFlowWebhookController {
     private GoogleCalendarService googleCalendarService;
 
     public String ahvNumber="";
+    public String calendarId = "rpaarztpraxis@gmail.com"; 
     public String getUrl = "https://cloud.uipath.com/rpaarztpraxis/DefaultTenant/dataservice_/api/EntityService/PatientRPA/read";
     public String postUrl = "https://cloud.uipath.com/rpaarztpraxis/DefaultTenant/dataservice_/api/EntityService/PatientRPA/insert";
     public String bearerToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjhDNzY1N0U2NEExNzNEMTRCNzhEQkIzRjRGQjdEQTJBMDFCNzE1MTEiLCJ4NXQiOiJqSFpYNWtvWFBSUzNqYnNfVDdmYUtnRzNGUkUiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2Nsb3VkLnVpcGF0aC5jb20vaWRlbnRpdHlfIiwibmJmIjoxNzE4NTUyMjc0LCJpYXQiOjE3MTg1NTI1NzQsImV4cCI6MTcxODU1NjE3NCwiYXVkIjoiRGF0YVNlcnZpY2VPcGVuQXBpIiwic2NvcGUiOlsiRGF0YVNlcnZpY2UuRGF0YS5SZWFkIiwiRGF0YVNlcnZpY2UuRGF0YS5Xcml0ZSIsIkRhdGFTZXJ2aWNlLlNjaGVtYS5SZWFkIl0sImFtciI6WyJleHRlcm5hbCJdLCJzdWJfdHlwZSI6InVzZXIiLCJwcnRfaWQiOiI0ZmU1YTY4My04MjMzLTQ4NzAtYmE0NS1lZTZhZTdmNmQzZTgiLCJjbGllbnRfaWQiOiJjODdhMmNkNS03NTYyLTQ3MjgtYjBjYS05N2U3OGE5MTQzMjYiLCJzdWIiOiI0ODkyYzcyYy02M2Q5LTRmOTItOTJlNC1lZDFmZGZiYzBjZDQiLCJhdXRoX3RpbWUiOjE3MTg1MzY3NjMsImlkcCI6Im9pZGMiLCJlbWFpbCI6InJwYWFyenRwcmF4aXNAZ21haWwuY29tIiwiQXNwTmV0LklkZW50aXR5LlNlY3VyaXR5U3RhbXAiOiJJNzRLS1BDN1RPNVNTNzJVWkROVDZBVjRVQVdXSVdPMyIsImF1dGgwX2NvbiI6Imdvb2dsZS1vYXV0aDIiLCJjb3VudHJ5IjoiU3dpdHplcmxhbmQiLCJleHRfc3ViIjoiZ29vZ2xlLW9hdXRoMnwxMDY0ODE0Mzc2NTEzNTUxNzYxOTIiLCJtYXJrZXRpbmdDb25kaXRpb25BY2NlcHRlZCI6IkZhbHNlIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0pPLWU5TFVGUVVQTjFyYXQ3LTNjOWplSS1uMDNlMTRuUlRNQnJSdHlIOTFlYWI1UT1zOTYtYyIsImhvc3QiOiJGYWxzZSIsImZpcnN0X25hbWUiOiJSUEEiLCJsYXN0X25hbWUiOiJBcnp0cHJheGlzIEFyenRwcmF4aXMiLCJwcnRfYWRtIjoiVHJ1ZSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJycGFhcnp0cHJheGlzQGdtYWlsLmNvbSIsIm5hbWUiOiJycGFhcnp0cHJheGlzQGdtYWlsLmNvbSIsImV4dF9pZHBfaWQiOiIxIiwiZXh0X2lkcF9kaXNwX25hbWUiOiJHbG9iYWxJZHAiLCJzaWQiOiI3NjRCODVFRTQ5RTNGNjA5N0NFRUE5QUFBN0FENzdCQSIsImp0aSI6IkEzNjEwQzMwQzA3RDIyMDFEQjk0RTgyMzQwOTI0RDg1In0.J3-9Dq2kUkwSMVlqiBMHaadrX4TzOF84QO22kgtquUHi4J1ToJT9H0hXLDoCuwaq0jwIdk-9ew3ClO07JdJQ-h_raNtrpcI_a6GgE6izYzDwVJFqLoq3AkoLicHDuDGmMiDTUPCN1BZhP5RZqpmOkA9SWJsiPqaer6qy2BvtxLApNPujR_nPp_OijQsQ8VUoguFiKHOIF-LMcAokAz9CfV_LZccTQo56VhPGdAsPleLsvwMuXC66YnfU5taMBaja129i8DgpA1oXRj2Ihae21oHnPa1FlmmOxa_yDpY143-quEQKmuLKTHh_oR-anlyphOxp13k2JSVNIS4m6suHHQ";
@@ -110,14 +111,11 @@ public class DialogFlowWebhookController {
             connection.savePatientToMongoDB(nachname, vorname, cleaned_AHV, email, handynummer);
             connection.closeClient();
 
-            try {
-      
-                
+            try {                
                 // Send GET request
                 String getResponse = sendGetRequest(getUrl, bearerToken);
                 System.out.println("GET Response: " + getResponse);
                 System.out.println("AHV Nummer bevor: " + ahvNumber.toString());
-           
                 
                 System.out.println("AHV Nummer danach: " + cleaned_AHV);
 
@@ -148,7 +146,7 @@ public class DialogFlowWebhookController {
             //msg = uiPathHandler.handlePatientRegistration(request, vorname, nachname, ahvNumber, email, handynummer,msg);
         } else if ("TerminVereinbaren".equals(intent)) {
             MongoClientConnection connection = new MongoClientConnection();
-            String calendarId = "rpaarztpraxis@gmail.com"; // Use your calendar ID
+           // Use your calendar ID
             Date date = new Date();
             int d = 7;
             ahvNumber = getParameterString(parameters, "AHVNumber");
@@ -189,7 +187,7 @@ public class DialogFlowWebhookController {
             System.out.println("Mail: " + mail);
             System.out.println("Name: " + name);
             String terminString = termin.replace("[{date_time=", "").replace("}]", "");
-            String responseMessage = googleCalendarService.validateAndCreateEvent(terminString, mail, name);
+            String responseMessage = googleCalendarService.validateAndCreateEvent(terminString, mail, name, calendarId);
             msg.setText(new GoogleCloudDialogflowV2IntentMessageText().setText(List.of(responseMessage)));
             
         } else if ("ContinuePatientIntent".equals(intent)) {

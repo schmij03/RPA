@@ -12,6 +12,11 @@ import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import com.google.api.services.calendar.model.Event;
+import com.google.api.services.calendar.model.EventDateTime;
+import com.google.api.services.calendar.model.FreeBusyRequest;
+import com.google.api.services.calendar.model.FreeBusyRequestItem;
+import com.google.api.services.calendar.model.FreeBusyResponse;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -154,42 +159,69 @@ public class GoogleCalendarService {
         }
     }
 
-    public String validateAndCreateEvent(String dateTimeStr, String participantEmail, String name) {
+    public String validateAndCreateEvent(String dateTimeStr, String participantEmail, String name, String calendarId) {
         System.out.println("Creating event for: " + dateTimeStr);
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX"); // Anpassung an das ISO 8601 Format
                                                                                     // mit Zeitzone
         format.setLenient(false); // Stellen Sie sicher, dass das Datum genau dem Format entsprechen muss
         try {
             Date date = format.parse(dateTimeStr);
-            return createCalendarEvent(date, participantEmail, name);
+            return createCalendarEvent(date, participantEmail, name, calendarId);
         } catch (ParseException e) {
             return "Ungültiges Datumsformat. Bitte geben Sie das Datum im Format 'yyyy-MM-dd'T'HH:mm:ssXXX' erneut ein. Beispiel: 2022-01-01T14:30:00+01:00";
         }
     }
 
-    public String createCalendarEvent(Date startDateTime, String participantEmail, String name) {
+    public String createCalendarEvent(Date startDateTime, String participantEmail, String name, String calendarId) {
         try {
             Calendar service = getCalendarService();
-            Event event = new Event().setSummary("Arzttermin: " + name).setDescription(participantEmail);
-                    // .setAttendees(Collections.singletonList(new
+            // .setAttendees(Collections.singletonList(new
             // EventAttendee().setEmail(participantEmail))); // Teilnehmer hinzufügen
 
             DateTime start = new DateTime(startDateTime);
-            EventDateTime startEventDateTime = new EventDateTime().setDateTime(start);
-            event.setStart(startEventDateTime);
-
             DateTime end = new DateTime(startDateTime.getTime() + 1800000);
-            EventDateTime endEventDateTime = new EventDateTime().setDateTime(end);
-            event.setEnd(endEventDateTime);
 
-            // Zum Standardkalender hinzufügen
-            event = service.events().insert("rpaarztpraxis@gmail.com", event).execute();
+            // Check if the time slot is free
+            FreeBusyRequest request = new FreeBusyRequest()
+                    .setTimeMin(start)
+                    .setTimeMax(end)
+                    .setItems(Collections.singletonList(new FreeBusyRequestItem().setId(calendarId)));
+            FreeBusyResponse response = service.freebusy().query(request).execute();
+            boolean isFree = response.getCalendars().get(calendarId).getBusy().isEmpty();
 
-            return "Termin erfolgreich für " + new SimpleDateFormat("dd.MM.yyyy 'um' HH:mm 'Uhr'").format(startDateTime)
+            if (isFree) {
+                // Create an event if the time slot is free
+                Event event_1 = new Event()
+                    .setSummary("Arzttermin: " + name)
+                    .setLocation("Dr. RPA, Zürich, ZHAW Strasse 69")
+                    .setDescription(participantEmail);
+
+                EventDateTime start_1 = new EventDateTime()
+                    .setDateTime(start)
+                    .setTimeZone("America/Los_Angeles");
+                
+                event_1.setStart(start_1);
+
+                EventDateTime end_1 = new EventDateTime()
+                    .setDateTime(end)
+                    .setTimeZone("America/Los_Angeles");
+                
+                event_1.setEnd(end_1);
+
+                event_1 = service.events().insert(calendarId, event_1).execute();
+                System.out.printf("Event created: %s\n", event_1.getHtmlLink());
+                return "Termin erfolgreich für " + new SimpleDateFormat("dd.MM.yyyy 'um' HH:mm 'Uhr'").format(startDateTime)
                     + " erstellt. \n \n Die Terminbestätigung wurde soeben versendet.";
+            } else {
+                System.out.println("The time slot is not free.");
+                return "Zu dieser Zeit gibt es keinen Freien Termin. Vesuche eine andere Zeit";
+            }
+
+            
         } catch (GeneralSecurityException | IOException e) {
             e.printStackTrace();
             return "Fehler beim Erstellen des Termins: " + e.getMessage();
         }
     }
+
 }
