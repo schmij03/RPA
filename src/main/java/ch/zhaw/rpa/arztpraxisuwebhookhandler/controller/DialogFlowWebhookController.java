@@ -55,7 +55,6 @@ public class DialogFlowWebhookController {
     @Autowired
     private GoogleCalendarService googleCalendarService;
 
-    @Autowired
     public String ahvNumber="";
 
     @GetMapping(value = "/test")
@@ -96,18 +95,20 @@ public class DialogFlowWebhookController {
             // Patientendaten erfassen
             String vorname = getParameterString(parameters, "vorname");
             String nachname = getParameterString(parameters, "nachname");
-            ahvNumber = getParameterString(parameters, "AHVNumber");
+            ahvNumber = getParameterString(parameters, "ahvNummer");
             String email = getParameterString(parameters, "email");
             String handynummer = getParameterString(parameters, "handynummer");
             // Save patient to MongoDB
             MongoClientConnection connection = new MongoClientConnection();
             connection.savePatientToMongoDB(nachname, vorname, ahvNumber, email, handynummer);
             connection.closeClient();
+            ahvNumber="";
             GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
             text.setText(List.of("Patient wurde erfolgreich registriert. Wenn Sie einen Termin benötigen schreiben Sie bitte 'Termin'?"));
             msg.setText(text);
             //Save Patient to UiPath
             System.out.println("Handle Patient Registration");
+
             //msg = uiPathHandler.handlePatientRegistration(request, vorname, nachname, ahvNumber, email, handynummer,msg);
         } else if ("TerminVereinbaren".equals(intent)) {
             MongoClientConnection connection = new MongoClientConnection();
@@ -116,15 +117,7 @@ public class DialogFlowWebhookController {
             int d = 7;
             ahvNumber = getParameterString(parameters, "AHVNumber");
 
-            //Get Request
-            try {
-                String url = "https://cloud.uipath.com/rpaarztpraxis/DefaultTenant/dataservice_/api/EntityService/PatientRPA/read";
-                String bearerToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjhDNzY1N0U2NEExNzNEMTRCNzhEQkIzRjRGQjdEQTJBMDFCNzE1MTEiLCJ4NXQiOiJqSFpYNWtvWFBSUzNqYnNfVDdmYUtnRzNGUkUiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2Nsb3VkLnVpcGF0aC5jb20vaWRlbnRpdHlfIiwibmJmIjoxNzE4NTQwNDU2LCJpYXQiOjE3MTg1NDA3NTYsImV4cCI6MTcxODU0NDM1NiwiYXVkIjoiRGF0YVNlcnZpY2VPcGVuQXBpIiwic2NvcGUiOlsiRGF0YVNlcnZpY2UuRGF0YS5SZWFkIiwiRGF0YVNlcnZpY2UuRGF0YS5Xcml0ZSIsIkRhdGFTZXJ2aWNlLlNjaGVtYS5SZWFkIl0sImFtciI6WyJleHRlcm5hbCJdLCJzdWJfdHlwZSI6InVzZXIiLCJwcnRfaWQiOiI0ZmU1YTY4My04MjMzLTQ4NzAtYmE0NS1lZTZhZTdmNmQzZTgiLCJjbGllbnRfaWQiOiJjODdhMmNkNS03NTYyLTQ3MjgtYjBjYS05N2U3OGE5MTQzMjYiLCJzdWIiOiI0ODkyYzcyYy02M2Q5LTRmOTItOTJlNC1lZDFmZGZiYzBjZDQiLCJhdXRoX3RpbWUiOjE3MTg1MzY3NjMsImlkcCI6Im9pZGMiLCJlbWFpbCI6InJwYWFyenRwcmF4aXNAZ21haWwuY29tIiwiQXNwTmV0LklkZW50aXR5LlNlY3VyaXR5U3RhbXAiOiJJNzRLS1BDN1RPNVNTNzJVWkROVDZBVjRVQVdXSVdPMyIsImF1dGgwX2NvbiI6Imdvb2dsZS1vYXV0aDIiLCJjb3VudHJ5IjoiU3dpdHplcmxhbmQiLCJleHRfc3ViIjoiZ29vZ2xlLW9hdXRoMnwxMDY0ODE0Mzc2NTEzNTUxNzYxOTIiLCJtYXJrZXRpbmdDb25kaXRpb25BY2NlcHRlZCI6IkZhbHNlIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0pPLWU5TFVGUVVQTjFyYXQ3LTNjOWplSS1uMDNlMTRuUlRNQnJSdHlIOTFlYWI1UT1zOTYtYyIsImhvc3QiOiJGYWxzZSIsImZpcnN0X25hbWUiOiJSUEEiLCJsYXN0X25hbWUiOiJBcnp0cHJheGlzIEFyenRwcmF4aXMiLCJwcnRfYWRtIjoiVHJ1ZSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJycGFhcnp0cHJheGlzQGdtYWlsLmNvbSIsIm5hbWUiOiJycGFhcnp0cHJheGlzQGdtYWlsLmNvbSIsImV4dF9pZHBfaWQiOiIxIiwiZXh0X2lkcF9kaXNwX25hbWUiOiJHbG9iYWxJZHAiLCJzaWQiOiI3NjRCODVFRTQ5RTNGNjA5N0NFRUE5QUFBN0FENzdCQSIsImp0aSI6IjExNkZFQkE2RDFGNDY4OEM3MkU5OEJCNjY3RTRFNDY1In0.FdBXETue8TVi7msMysk2-QywSf_91de9w6T6thPDwvD3kplvV0ACvg23S82W3WxMT1NGmv-0fdV1mXHk_6BCMCvY0cjAmm3BaZdZx9kUPzuTwJq_n6mnL_YUo-DpnNt_ZJgvnBXhnrzvcKnlztIVCy8pJQ96ULFDI2j6vpSbUM4O9S-xuVu4WQnR-mxzJlvwxjTHQg0jbr8-1zXVwX5LpI9Nb8iuEbdF_HV_w5XJAXshUpTxn6dDmCMCt6A6kI947fyvjG7iZzEpL2m-R6C_5TctGyZ9_fSrzM8aeUJIAg2_jJVzXPjSjvIdVaDQCWqUPbzQMQd1sgDZ2SB8sIBMyA";
-                String response_API = sendGetRequest(url, bearerToken);
-                System.out.println(response_API);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            
 
             System.out.println("AHV: " + ahvNumber);
             if (!checkAhvNBumber(ahvNumber)) {
@@ -157,6 +150,8 @@ public class DialogFlowWebhookController {
             String[] patientinfo = connection.getEmailAndNameByAhvnummer(ahvNumber);            
             String mail = patientinfo != null && patientinfo.length > 0 ? patientinfo[0] : "";
             String name = patientinfo != null && patientinfo.length > 1 ? patientinfo[1] : "";
+            System.out.println("Mail: " + mail);
+            System.out.println("Name: " + name);
             String terminString = termin.replace("[{date_time=", "").replace("}]", "");
             String responseMessage = googleCalendarService.validateAndCreateEvent(terminString, mail, name);
             msg.setText(new GoogleCloudDialogflowV2IntentMessageText().setText(List.of(responseMessage)));
