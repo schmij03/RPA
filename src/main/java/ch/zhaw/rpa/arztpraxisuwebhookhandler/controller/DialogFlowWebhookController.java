@@ -1,13 +1,21 @@
 package ch.zhaw.rpa.arztpraxisuwebhookhandler.controller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.net.HttpURLConnection;
 import java.security.GeneralSecurityException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URI;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -96,6 +104,16 @@ public class DialogFlowWebhookController {
             int d = 7;
             String ahvNumber = getParameterString(parameters, "AHVNumber");
 
+            //Get Request
+            try {
+                String url = "https://cloud.uipath.com/rpaarztpraxis/DefaultTenant/dataservice_/api/EntityService/PatientRPA/read";
+                String bearerToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjhDNzY1N0U2NEExNzNEMTRCNzhEQkIzRjRGQjdEQTJBMDFCNzE1MTEiLCJ4NXQiOiJqSFpYNWtvWFBSUzNqYnNfVDdmYUtnRzNGUkUiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2Nsb3VkLnVpcGF0aC5jb20vaWRlbnRpdHlfIiwibmJmIjoxNzE4NTQwNDU2LCJpYXQiOjE3MTg1NDA3NTYsImV4cCI6MTcxODU0NDM1NiwiYXVkIjoiRGF0YVNlcnZpY2VPcGVuQXBpIiwic2NvcGUiOlsiRGF0YVNlcnZpY2UuRGF0YS5SZWFkIiwiRGF0YVNlcnZpY2UuRGF0YS5Xcml0ZSIsIkRhdGFTZXJ2aWNlLlNjaGVtYS5SZWFkIl0sImFtciI6WyJleHRlcm5hbCJdLCJzdWJfdHlwZSI6InVzZXIiLCJwcnRfaWQiOiI0ZmU1YTY4My04MjMzLTQ4NzAtYmE0NS1lZTZhZTdmNmQzZTgiLCJjbGllbnRfaWQiOiJjODdhMmNkNS03NTYyLTQ3MjgtYjBjYS05N2U3OGE5MTQzMjYiLCJzdWIiOiI0ODkyYzcyYy02M2Q5LTRmOTItOTJlNC1lZDFmZGZiYzBjZDQiLCJhdXRoX3RpbWUiOjE3MTg1MzY3NjMsImlkcCI6Im9pZGMiLCJlbWFpbCI6InJwYWFyenRwcmF4aXNAZ21haWwuY29tIiwiQXNwTmV0LklkZW50aXR5LlNlY3VyaXR5U3RhbXAiOiJJNzRLS1BDN1RPNVNTNzJVWkROVDZBVjRVQVdXSVdPMyIsImF1dGgwX2NvbiI6Imdvb2dsZS1vYXV0aDIiLCJjb3VudHJ5IjoiU3dpdHplcmxhbmQiLCJleHRfc3ViIjoiZ29vZ2xlLW9hdXRoMnwxMDY0ODE0Mzc2NTEzNTUxNzYxOTIiLCJtYXJrZXRpbmdDb25kaXRpb25BY2NlcHRlZCI6IkZhbHNlIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0pPLWU5TFVGUVVQTjFyYXQ3LTNjOWplSS1uMDNlMTRuUlRNQnJSdHlIOTFlYWI1UT1zOTYtYyIsImhvc3QiOiJGYWxzZSIsImZpcnN0X25hbWUiOiJSUEEiLCJsYXN0X25hbWUiOiJBcnp0cHJheGlzIEFyenRwcmF4aXMiLCJwcnRfYWRtIjoiVHJ1ZSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJycGFhcnp0cHJheGlzQGdtYWlsLmNvbSIsIm5hbWUiOiJycGFhcnp0cHJheGlzQGdtYWlsLmNvbSIsImV4dF9pZHBfaWQiOiIxIiwiZXh0X2lkcF9kaXNwX25hbWUiOiJHbG9iYWxJZHAiLCJzaWQiOiI3NjRCODVFRTQ5RTNGNjA5N0NFRUE5QUFBN0FENzdCQSIsImp0aSI6IjExNkZFQkE2RDFGNDY4OEM3MkU5OEJCNjY3RTRFNDY1In0.FdBXETue8TVi7msMysk2-QywSf_91de9w6T6thPDwvD3kplvV0ACvg23S82W3WxMT1NGmv-0fdV1mXHk_6BCMCvY0cjAmm3BaZdZx9kUPzuTwJq_n6mnL_YUo-DpnNt_ZJgvnBXhnrzvcKnlztIVCy8pJQ96ULFDI2j6vpSbUM4O9S-xuVu4WQnR-mxzJlvwxjTHQg0jbr8-1zXVwX5LpI9Nb8iuEbdF_HV_w5XJAXshUpTxn6dDmCMCt6A6kI947fyvjG7iZzEpL2m-R6C_5TctGyZ9_fSrzM8aeUJIAg2_jJVzXPjSjvIdVaDQCWqUPbzQMQd1sgDZ2SB8sIBMyA";
+                String response_API = sendGetRequest(url, bearerToken);
+                System.out.println(response_API);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             System.out.println("AHV: " + ahvNumber);
             if (!checkAhvNBumber(ahvNumber)) {
                   // Session Id auslesen
@@ -162,6 +180,33 @@ public class DialogFlowWebhookController {
     private String getParameterString(Map<String, Object> parameters, String key) {
         Object value = parameters.get(key);
         return value != null ? value.toString() : "";
+    }
+
+    public String sendGetRequest(String url, String bearerToken) throws Exception {
+        URL obj = new URI(url).toURL();
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+        // Setting the request method to GET
+        con.setRequestMethod("GET");
+
+        // Adding the Authorization header with the Bearer token
+        con.setRequestProperty("Authorization", "Bearer " + bearerToken);
+
+        // Handling the response
+        int responseCode = con.getResponseCode();
+        System.out.println("Response Code : " + responseCode);
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+
+        // Returning the response as a string
+        return response.toString();
     }
 
 }
