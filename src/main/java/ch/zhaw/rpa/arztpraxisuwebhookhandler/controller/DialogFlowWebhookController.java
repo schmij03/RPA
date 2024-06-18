@@ -107,43 +107,47 @@ public class DialogFlowWebhookController {
             String handynummer = getParameterString(parameters, "handynummer");
             // Save patient to MongoDB
             MongoClientConnection connection = new MongoClientConnection();
-            
-            connection.savePatientToMongoDB(nachname, vorname, cleaned_AHV, email, handynummer);
-            connection.closeClient();
-
-            try {                
-                // Send GET request
-                String getResponse = sendGetRequest(getUrl, bearerToken);
-                System.out.println("GET Response: " + getResponse);
-                System.out.println("AHV Nummer bevor: " + ahvNumber.toString());
-                
-                System.out.println("AHV Nummer danach: " + cleaned_AHV);
-
-                // Send POST request
-                JSONObject postData = new JSONObject();
-                postData.put("ahvNumber", cleaned_AHV);
-                postData.put("email", email);
-                postData.put("handynummer", handynummer);
-                postData.put("nachname", nachname);
-                postData.put("vorname", vorname);
-
-                System.out.println("Postdata: " + postData.toString());
-                if(email != "default@example.com" &&  cleaned_AHV != "" && nachname != "" && vorname != "" && handynummer != "0"){
-                    String postResponse = sendPostRequest(postUrl, bearerToken, postData.toString());
-                    System.out.println("POST Response: " + postResponse);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            ahvNumber="";
             GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
-            text.setText(List.of("Patient wurde erfolgreich registriert. Wenn Sie einen Termin benötigen schreiben Sie bitte 'Termin'?"));
-            msg.setText(text);
-            //Save Patient to UiPath
-            System.out.println("Handle Patient Registration");
-
-            //msg = uiPathHandler.handlePatientRegistration(request, vorname, nachname, ahvNumber, email, handynummer,msg);
+            if (connection.checkIfPatientExists(ahvNumber)) {
+                text.setText(List.of("AHV-Nummer existiert bereits. Bitte geben Sie Ihre korrekte AHV Nummer an oder vereinbaren Sie über 'Termin' eine Besprechung."));
+                msg.setText(text);
+                connection.closeClient();}
+            else {
+                connection.savePatientToMongoDB(nachname, vorname, cleaned_AHV, email, handynummer);
+                connection.closeClient();
+                try {                
+                    // Send GET request
+                    String getResponse = sendGetRequest(getUrl, bearerToken);
+                    System.out.println("GET Response: " + getResponse);
+                    System.out.println("AHV Nummer bevor: " + ahvNumber.toString());
+                    
+                    System.out.println("AHV Nummer danach: " + cleaned_AHV);
+    
+                    // Send POST request
+                    JSONObject postData = new JSONObject();
+                    postData.put("ahvNumber", cleaned_AHV);
+                    postData.put("email", email);
+                    postData.put("handynummer", handynummer);
+                    postData.put("nachname", nachname);
+                    postData.put("vorname", vorname);
+    
+                    System.out.println("Postdata: " + postData.toString());
+                    if(email != "default@example.com" &&  cleaned_AHV != "" && nachname != "" && vorname != "" && handynummer != "0"){
+                        String postResponse = sendPostRequest(postUrl, bearerToken, postData.toString());
+                        System.out.println("POST Response: " + postResponse);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+    
+                ahvNumber="";
+                text = new GoogleCloudDialogflowV2IntentMessageText();
+                text.setText(List.of("Patient wurde erfolgreich registriert. Wenn Sie einen Termin benötigen schreiben Sie bitte 'Termin'?"));
+                msg.setText(text);
+                //Save Patient to UiPath
+                System.out.println("Handle Patient Registration");
+            }
+            
         } else if ("TerminVereinbaren".equals(intent)) {
             MongoClientConnection connection = new MongoClientConnection();
            // Use your calendar ID
