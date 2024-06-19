@@ -105,7 +105,7 @@ public class DialogFlowWebhookController {
             // Save patient to MongoDB
             MongoClientConnection connection = new MongoClientConnection();
             GoogleCloudDialogflowV2IntentMessageText text = new GoogleCloudDialogflowV2IntentMessageText();
-            if (!connection.checkIfPatientExists(ahvNumber)) {
+            if (connection.checkIfPatientExists(cleaned_AHV)) {
                 text.setText(List.of("AHV-Nummer existiert bereits. Bitte geben Sie Ihre korrekte AHV Nummer an oder vereinbaren Sie über 'Termin' eine Besprechung."));
                 msg.setText(text);
                 connection.closeClient();}
@@ -151,7 +151,7 @@ public class DialogFlowWebhookController {
             Date date = new Date();
             int d = 7;
             ahvNumber = getParameterString(parameters, "AHVNumber");
-
+            System.out.println("AHV: " + ahvNumber);
             
 
             System.out.println("AHV: " + ahvNumber);
